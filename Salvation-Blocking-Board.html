@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Salvation Blocking Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: stage manager's prompt book — scene tabs, the stage plan from the set design, beat-by-beat blocking beside it */
+:root{
+  --bg:#EDF0F3;--panel:#FFFFFF;--ink:#17202B;--muted:#596575;--line:#D3DAE2;
+  --stage:#C6D0D9;--off:#DADADA;--set:#727272;--stairs:#B3B3B3;--house:#E3E5E8;--setink:#111;
+  --ring:#FFFFFF;--accent:#E3AE00;--accent-ink:#231B00;--prop:#8A6A43;--prop-ink:#FFFFFF;--tape:#E3AE00;
+  --f-display:"League Spartan","Avenir Next","Segoe UI",sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151B;--panel:#18202A;--ink:#E6EBF0;--muted:#9AA7B5;--line:#2A3541;
+  --stage:#33404D;--off:#20272E;--set:#58626D;--stairs:#3E4751;--house:#1A2027;--setink:#E6EBF0;
+  --ring:#10151B;--accent:#F2C230;--accent-ink:#231B00;--prop:#A07D52;--prop-ink:#FFFFFF;--tape:#F2C230;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151B;--panel:#18202A;--ink:#E6EBF0;--muted:#9AA7B5;--line:#2A3541;
+  --stage:#33404D;--off:#20272E;--set:#58626D;--stairs:#3E4751;--house:#1A2027;--setink:#E6EBF0;
+  --ring:#10151B;--accent:#F2C230;--accent-ink:#231B00;--prop:#A07D52;--prop-ink:#FFFFFF;--tape:#F2C230;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;margin-bottom:16px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4.4vw,44px);line-height:1;margin:4px 0 0;text-wrap:balance}
+.sub{color:var(--muted);font-size:14px;max-width:46ch}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:thin}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;text-align:left;font:inherit}
+.tab b{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tab span{font-weight:600;font-size:14px;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tab[aria-selected="true"] b{color:var(--accent-ink)}
+.tab:focus-visible,.btn:focus-visible,.beat:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.stagebox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.scenehead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;align-items:baseline;margin:0 4px 10px}
+.scenehead h2{font-family:var(--f-display);font-weight:700;font-size:22px;margin:0}
+.scenehead .place{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.svgscroll{overflow-x:auto;border-radius:6px}
+.svgscroll svg{display:block;width:100%;min-width:660px;height:auto}
+.hint{display:none;font-size:12px;color:var(--muted);margin:6px 4px 0}
+@media (max-width:700px){.hint{display:block}}
+.stepper{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.4;cursor:default}
+.count{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.card h3{font-family:var(--f-display);font-weight:700;font-size:20px;margin:0 0 10px;text-wrap:balance}
+.label{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+.label:first-of-type{margin-top:0}
+.cue{font-family:var(--f-mono);font-size:13px;background:var(--bg);border-left:3px solid var(--accent);padding:8px 10px;border-radius:0 6px 6px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 4px}
+.dot{width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-size:9px;font-weight:700;font-family:var(--f-display)}
+.beats{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;counter-reset:b}
+.beat{width:100%;display:flex;gap:10px;align-items:baseline;text-align:left;border:0;background:none;color:var(--ink);font:inherit;padding:7px 8px;border-radius:6px;cursor:pointer}
+.beat::before{counter-increment:b;content:counter(b);font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:1.4em;font-variant-numeric:tabular-nums}
+.beat:hover{background:var(--bg)}
+.beat[aria-current="true"]{background:var(--accent);color:var(--accent-ink)}
+.beat[aria-current="true"]::before{color:var(--accent-ink)}
+.key{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.key p{margin:0;font-size:13.5px;color:var(--muted)}
+.key strong{color:var(--ink)}
+svg text{font-family:var(--f-display)}
+@media (prefers-reduced-motion:no-preference){.tok{transition:transform .35s ease}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Blocking board · Gr. 8 English Night</div>
+      <h1>In the Name of Salvation</h1>
+    </div>
+    <p class="sub">Pick a scene, then step through its beats. Each beat shows where everyone stands, where they came from, and what's on the set.</p>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Scenes"></nav>
+
+  <div class="grid">
+    <section class="stagebox">
+      <div class="scenehead"><h2 id="sTitle"></h2><span class="place" id="sPlace"></span></div>
+      <div class="svgscroll"><svg id="stage" viewBox="0 0 1920 1200" role="img" aria-label="Stage plan"></svg></div>
+      <p class="hint">Swipe the plan sideways to see the whole stage.</p>
+      <div class="stepper">
+        <button class="btn" id="prev">← Prev beat</button>
+        <button class="btn" id="next">Next beat →</button>
+        <span class="count" id="count"></span>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card">
+        <h3 id="bTitle"></h3>
+        <div class="label">Cue</div><div class="cue" id="bCue"></div>
+        <div class="label">Blocking</div><p id="bDo" style="margin:0"></p>
+        <div class="label">Lights &amp; sound</div><p id="bLight" style="margin:0"></p>
+        <div id="voiceWrap"><div class="label">Voice only (offstage)</div><p id="bVoice" style="margin:0"></p></div>
+        <div class="label">On stage</div><div class="chips" id="bCast"></div>
+      </div>
+      <div class="card">
+        <div class="label" style="margin-top:0">Beats in this scene</div>
+        <ol class="beats" id="beats"></ol>
+      </div>
+    </aside>
+  </div>
+
+  <div class="key">
+    <div class="card"><p><strong>Reading the plan.</strong> Solid circle = where the actor is for this beat. Dashed circle and dashed line = where they started and the path they take. An arrow into a flap means an exit.</p></div>
+    <div class="card"><p><strong>Wings.</strong> The script's "left wing" is mapped to behind Flap 1 and "right wing" to behind Flap 2, as seen from the audience. "Foreground" is downstage, near the front stairs. Swap sides if your crew counts it the other way.</p></div>
+    <div class="card"><p><strong>Unscripted moves.</strong> Where the script doesn't say how someone leaves (PO2, PO3, EC), the board sends them out the nearest flap after their last line. Flag these at rehearsal.</p></div>
+  </div>
+</div>
+
+<script>
+const CAST={
+ DZ:['DZ','Detective Z','#1E57B8'],PO:['PO','Police Officer (Chief)','#0D7F69'],PO2:['PO2','Officer 2','#3A9C86'],PO3:['PO3','Officer 3','#4F6D66'],
+ POd:['PO*','PO double (gag)','#0D7F69'],EC:['EC','Evidence collector','#5E7E2E'],M:['M','Dr. Mo Li Hua','#7B3FA6'],K:['K','Adharma','#A562C9'],
+ NA1:['NA1','News anchor 1','#5F6670'],NA2:['NA2','News anchor 2','#78808A'],NC:['NC','News correspondent','#4C5560'],CAM:['CAM','Cameraman','#6A6F76'],
+ FAM:['FAM','Families','#94744E'],NR1:['NR1','News reporter 1','#5F6670'],NR2:['NR2','News reporter 2','#78808A'],
+ P:['P','Ambassador Ping','#B4621A'],A:['A','Lady Ai-Qing','#CC8A22'],Y:['GOH','Ms. Goh (Y / L)','#B3122E'],V1:['V1','Beì Xiao (Victim 1)','#3F444B']
+};
+const W1=[210,270],W2=[1710,270],BS=[944,45],DESK=['desk',944,560],BEHIND=[944,465],LAB=['lab',1250,520],MBEH=[1250,430],BOARD=['board',944,150];
+
+const SCENES=[
+{tab:'Act 1 · Sc 1',name:'Breaking news',place:'News studio → station',props:[['newsdesk',944,330]],beats:[
+ {t:'Anchors take their seats',c:'Lights on',b:'NA1 enters from the Flap 1 wing, NA2 from the Flap 2 wing. Both sit at the news desk and settle in.',a:{NA1:[840,410],NA2:[1050,410]},m:[['NA1',[W1,[840,410]]],['NA2',[W2,[1050,410]]]],l:'Lights up full.',v:'AD — time check, read from the booth.'},
+ {t:'The broadcast',c:'NA1: “Good evening. Unfortunately, we have received news about two missing individuals.”',b:'Anchors deliver from the desk. NC reports from the Flap 2 side holding a mic, with the cameraman beside and families gathered behind.',a:{NA1:[840,410],NA2:[1050,410],NC:[1450,760],CAM:[1290,830],FAM:[1590,630]},m:[['NC',[W2,[1450,760]]],['CAM',[W2,[1290,830]]],['FAM',[W2,[1590,630]]]],l:'SFX: news intro (first 10 seconds).'},
+ {t:'TV off — the detective arrives',c:'AD: “Thank you for tuning in to CNA…”',b:'Anchors, NC, cameraman and families clear to the wings. DZ enters through the backstage gap; PO meets him centre and fetches the case files.',a:{DZ:[800,600],PO:[1090,600]},m:[['NA1',[[840,410],W1]],['NA2',[[1050,410],W2]],['NC',[[1450,760],W2]],['FAM',[[1590,630],W2]],['DZ',[BS,[800,600]]],['PO',[W2,[1090,600]]]],l:'SFX: TV turning off. Spot on DZ, then slowly bring all lights up.'},
+ {t:'Watching the old tapes',c:'DZ: “Alright… Let’s see the oldest one”',b:'DZ and PO walk down to the foreground and face upstage as if watching a screen. NR1 and NR2 take the news desk for the old report.',a:{DZ:[830,830],PO:[1060,830],NR1:[840,410],NR2:[1050,410]},m:[['DZ',[[800,600],[830,830]]],['PO',[[1090,600],[1060,830]]],['NR1',[W1,[840,410]]],['NR2',[W2,[1050,410]]]],l:'SFX: news intro.'},
+ {t:'Radio call',c:'*play radio static*',b:'NR1 and NR2 clear. PO takes the radio call and exits to the Flap 2 wing, leaving the files with DZ.',a:{DZ:[880,830]},m:[['PO',[[1060,830],W2]],['NR1',[[840,410],W1]],['NR2',[[1050,410],W2]]],l:'SFX: radio static. Lights out at end of scene.'}
+]},
+{tab:'Act 1 · Sc 2',name:'The pattern',place:'Police station · DZ’s office',props:[DESK,['chair',740,560]],beats:[
+ {t:'Reading the files',c:'DZ: “Hm, these cases seem….odd”',b:'DZ behind the desk, looking through papers, then picks up another file.',a:{DZ:BEHIND},m:[],l:'Lights up.'},
+ {t:'Pacing — PO2 and PO3 report',c:'DZ: “They all seem to follow some sort of pattern…”',b:'DZ rises with the V4 and V5 files and walks a loop downstage. PO2 enters from the Flap 2 wing, PO3 from the Flap 1 wing, each reporting to him.',a:{DZ:[944,760],PO2:[1300,640],PO3:[590,640]},m:[['DZ',[BEHIND,[620,700],[944,760]]],['PO2',[W2,[1300,640]]],['PO3',[W1,[590,640]]]],l:'Hold full stage.'},
+ {t:'Phone rings',c:'SFX: phone ringing',b:'PO2 and PO3 clear out their nearest flaps (exit not scripted). DZ crosses to the phone in the foreground.',p:[DESK,['chair',740,560],['phone',1230,870]],a:{DZ:[1110,830]},m:[['DZ',[[944,760],[1110,830]]],['PO2',[[1300,640],W2]],['PO3',[[590,640],W1]]],l:'SFX: phone ringing.',v:'M — Dr. Li Hua on the phone.'},
+ {t:'Later — the doctor visits',c:'SFX: knock on door',b:'DZ back behind the desk, writing. M enters from the Flap 1 wing and takes the side chair.',a:{DZ:BEHIND,M:[740,535]},m:[['M',[W1,[740,535]]]],l:'Fade out, then lights up.'},
+ {t:'Doctor leaves · reset',c:'M: “Goodbye, Detective. Wishing you the best.”',b:'M exits to the Flap 1 wing. In the blackout, crew slides DZ’s desk to the foreground and brings the news desk on upstage (dashed outlines) for the next scene.',p:[['desk',944,840,'Desk → here','ghost'],['newsdesk',944,330,'News desk on','ghost']],a:{DZ:BEHIND},m:[['M',[[740,535],W1]]],l:'Focus light to the foreground. Lights out.'}
+]},
+{tab:'Act 1 · Sc 3',name:'Cold cases',place:'Living room',props:[['desk',944,840],['newsdesk',944,330]],beats:[
+ {t:'Settling in, TV on',c:'SFX: TV turning on',b:'DZ enters from the Flap 1 wing and sits behind the desk in the foreground with the files. NR1 and NR2 are set at the news desk (the “TV”).',a:{DZ:[944,750],NR1:[840,410],NR2:[1050,410]},m:[['DZ',[W1,[944,750]]]],l:'Lights up.'},
+ {t:'Second report — Lee Shing',c:'SFX: tv static sound',b:'NR1 leans in close to NR2 to whisper about the odd voice, then straightens for the sign-off.',a:{DZ:[944,750],NR1:[960,410],NR2:[1050,410]},m:[['NR1',[[840,410],[960,410]]]],l:'SFX: TV static.'},
+ {t:'TV off — changeover',c:'SFX: TV turning off',b:'Focus light on DZ. NR1 and NR2 carry their props backstage; crew removes the news desk and brings DZ’s desk back to centre. DZ moves with it.',p:[DESK,['newsdesk',944,330,'News desk off','ghost']],a:{DZ:BEHIND},m:[['NR1',[[960,410],BS]],['NR2',[[1050,410],BS]],['DZ',[[944,750],BEHIND]]],l:'SFX: TV turning off. Focus light on DZ.'},
+ {t:'Head down on the desk',c:'DZ: “Hm… Ugh…. None of these are relevant..”',b:'DZ slumped over a messy desk. PO creeps in from the Flap 2 wing.',p:[DESK,['papers',800,600]],a:{DZ:BEHIND,PO:[1230,520]},m:[['PO',[W2,[1230,520]]]],l:'Fade out, lights up.'},
+ {t:'The coffee run',c:'DZ: “Wait!.. Could you bring me a coffee?”',b:'PO goes to the Flap 2 wing for a paper cup and brings it back to DZ.',p:[DESK,['papers',800,600]],a:{DZ:BEHIND,PO:[1090,500]},m:[['PO',[[1230,520],W2,[1090,500]]]],l:'—'},
+ {t:'PO backs away',c:'DZ: “Good grief, just go would you?!”',b:'DZ stares PO down; PO backs out slowly to the Flap 2 wing. DZ alone, flipping pages.',p:[DESK,['papers',800,600]],a:{DZ:BEHIND},m:[['PO',[[1090,500],W2]]],l:'Lights out.'}
+]},
+{tab:'Act 1 · Sc 3b',name:'The crime scene',place:'Crime scene + audience',props:[['tape',600,420,600,900]],beats:[
+ {t:'Crossing the tape',c:'DZ: “So… This is where they believe it happened.”',b:'DZ enters from the Flap 1 wing, ducks under the police tape and meets PO centre.',a:{DZ:[860,560],PO:[1060,560]},m:[['DZ',[W1,[480,520],[860,560]]]],l:'Lights up.'},
+ {t:'Area secured',c:'PO2: “Chief! We have secured the area.”',b:'PO2 rushes in from the Flap 2 wing, reports, then exits across to the Flap 1 wing.',a:{DZ:[860,560],PO:[1060,560]},m:[['PO2',[W2,[1250,460],[700,380],W1]]],l:'—'},
+ {t:'Footprints',c:'PO3: “Some footprints, Detective…”',b:'PO3 joins from the Flap 2 wing. House lights come up to “reveal the audience”.',a:{DZ:[860,560],PO:[1060,560],PO3:[1270,600]},m:[['PO3',[W2,[1270,600]]]],l:'All lights on, house lights up.'},
+ {t:'Into the audience',c:'DZ: “Hey! This is a crime scene!”',b:'DZ walks downstage and down the front stairs; PO follows. PO3 slips off. They ask about five audience members where to look.',a:{DZ:[760,1135],PO:[1160,1135]},m:[['DZ',[[860,560],[930,830],[930,1015],[760,1135]]],['PO',[[1060,560],[990,830],[990,1015],[1160,1135]]],['PO3',[[1270,600],W2]]],l:'House lights stay up.'},
+ {t:'Finding the scrap',c:'PO: “DETECTIVE!! I found something, it could be evidence.”',b:'Either way the audience points, both end at the back of the house by the lights & sound area, where the clothing scrap is planted. If someone pointed right, PO thanks them.',p:[['tape',600,420,600,900],['booth',1720,1150]],a:{DZ:[1490,1150],PO:[1600,1105]},m:[['DZ',[[760,1135],[1490,1150]]],['PO',[[1160,1135],[1600,1105]]]],l:'House lights up.'},
+ {t:'Back on stage — bag it',c:'DZ: “*ahem*”',b:'Lights narrow to the stage; DZ and PO return up the front stairs into a downstage spot. PO fetches an evidence bag from the Flap 1 wing and bags the scrap.',a:{DZ:[880,800],PO:[1040,800]},m:[['DZ',[[1490,1150],[930,1015],[880,800]]],['PO',[[1600,1105],[990,1015],W1,[1040,800]]]],l:'House out. Spot on DZ and PO. Lights out at end.'}
+]},
+{tab:'Act 2 · Sc 1',name:'The blue light',place:'Forensics lab',props:[LAB],beats:[
+ {t:'Drop-off',c:'SFX: knock on door',b:'DZ enters from the Flap 1 wing to the lab table; M is working behind it.',a:{DZ:[1010,560],M:MBEH},m:[['DZ',[W1,[1010,560]]]],l:'Lights up.'},
+ {t:'Handing over the scrap',c:'EC: “Detective, please allow me to collect that evidence.”',b:'DZ hands the bag to M. EC enters from the Flap 2 wing to photograph and log it.',a:{DZ:[1010,560],M:MBEH,EC:[1460,600]},m:[['EC',[W2,[1460,600]]]],l:'—'},
+ {t:'DZ exits, M photographs',c:'M: “Alright let\'s check this out”',b:'DZ exits to the Flap 1 wing; EC clears to the Flap 2 wing (not scripted). M lays the scrap on the table and photographs it.',a:{M:MBEH},m:[['DZ',[[1010,560],W1]],['EC',[[1460,600],W2]]],l:'—'},
+ {t:'Blue light',c:'– CLOSE ALL LIGHTS –',b:'Blackout except M’s blue light on the scrap. M makes the call.',a:{M:MBEH},m:[],l:'Blackout. Blue/UV light at the lab table. SFX: phone ringtone (regular).',v:'DZ — answers the phone offstage.'},
+ {t:'The reveal',c:'DZ: “Doctor?”',b:'DZ re-enters from the Flap 1 wing to beside the table; M turns on the blue light to show the stains.',a:{DZ:[1080,520],M:MBEH},m:[['DZ',[W1,[1080,520]]]],l:'Low light, blue light on the table.'},
+ {t:'Goodbye, Doc',c:'DZ: “I\'ll get going now….. Goodbye, Doc.”',b:'DZ exits to the Flap 1 wing; M nods and keeps working.',a:{M:MBEH},m:[['DZ',[[1080,520],W1]]],l:'Lights out.'}
+]},
+{tab:'Act 2 · Sc 2',name:'The Ambassador',place:'Split stage · DZ / the Wong home',props:[['desk',480,560,'DZ desk'],['couch',1400,660]],beats:[
+ {t:'The call',c:'SFX: phone ring · pickup',b:'Split stage. DZ on the phone at his desk on the Flap 1 side. A answers at home on the Flap 2 side.',a:{DZ:[480,465],A:[1400,540]},m:[],l:'Two specials: DZ side and home side.'},
+ {t:'P takes the phone',c:'P: “Hello? Ambassador Ping speaking…”',b:'P crosses in from the Flap 2 wing and takes the phone from A; A sits on the sofa.',a:{DZ:[480,465],A:[1330,650],P:[1490,520]},m:[['P',[W2,[1490,520]]],['A',[[1400,540],[1330,650]]]],l:'—'},
+ {t:'After the call',c:'– CUT LIGHTS – P puts down the phone',b:'DZ exits in the blackout. Home special only. P sits beside A for the hug and head pat.',a:{A:[1330,650],P:[1470,650]},m:[['DZ',[[480,465],W1]],['P',[[1490,520],[1470,650]]]],l:'Blackout, then home special only.'},
+ {t:'Papers to sign',c:'A: “Oh, and there\'s some papers for you to sign…”',b:'They pull out of the hug and hold on the sofa.',a:{A:[1330,650],P:[1470,650]},m:[],l:'Lights out.'}
+]},
+{tab:'Act 2 · Sc 3',name:'Jacket & phone',place:'Investigation office',props:[DESK,BOARD],beats:[
+ {t:'The jacket',c:'PO: “DETECTIVE!! Someone surrendered this jacket…”',b:'DZ idle at the desk. PO barges in from the Flap 2 wing with the bagged jacket.',a:{DZ:BEHIND,PO:[1180,560]},m:[['PO',[W2,[1180,560]]]],l:'Lights up.'},
+ {t:'Calling the Ambassador',c:'SFX: (Chinese) phone ring',b:'PO calls from the desk phone. Hold the silent beat between PO and DZ before the pickup.',a:{DZ:BEHIND,PO:[1090,520]},m:[['PO',[[1180,560],[1090,520]]]],l:'SFX: Chinese ringtone, then pickup.',v:'P — on the phone.'},
+ {t:'P identifies it',c:'Enter P after 15 secs',b:'P enters from the Flap 2 wing. DZ holds up the jacket for him.',a:{DZ:BEHIND,PO:[1090,560],P:[1330,560]},m:[['P',[W2,[1330,560]]]],l:'—'},
+ {t:'P leaves',c:'P: “…I\'ll take my leave now goodbye detective”',b:'P walks out to the Flap 2 wing during DZ’s line.',a:{DZ:BEHIND,PO:[1090,560]},m:[['P',[[1330,560],W2]]],l:'—'},
+ {t:'Deja vu',c:'DZ: “Okay, back to work…woah.. deja vu”',b:'DZ and PO exit together to the Flap 1 wing.',a:{},m:[['DZ',[BEHIND,W1]],['PO',[[1090,560],[700,520],W1]]],l:'Cut lights.'},
+ {t:'The corkboard',c:'—CUT LIGHTS— DZ alone',b:'DZ enters from the Flap 1 wing and stands centre, staring obsessively at the corkboard upstage. Phone rings — Dr. Li Hua.',a:{DZ:[944,320]},m:[['DZ',[W1,[944,320]]]],l:'Lights up. SFX: Chinese ringtone, pickup.',v:'M — on the phone.'},
+ {t:'Hung up on — twice',c:'M: “You hung up on me, Detective….”',b:'PO comes in from the Flap 1 wing. After the second call PO gets a radio message and runs off to the Flap 2 wing.',a:{DZ:[944,320]},m:[['PO',[W1,[1150,440],W2]]],l:'SFX: regular ringtone. Radio.',v:'M — on the phone. PO2 — on the radio.'},
+ {t:'Slow walk, then the cellphone',c:'PO: “DETECTIIIIIIIVE WE GOT ANOTHER PIECE OF EVIDENCE!”',b:'DZ drifts very slowly toward the Flap 1 side, writing and humming. PO runs back in from the Flap 2 wing and catches him.',a:{DZ:[620,620],PO:[790,620]},m:[['DZ',[[944,320],[620,620]]],['PO',[W2,[790,620]]]],l:'—'},
+ {t:'The mother’s call',c:'SFX: ringtone (tung tung sahur)',b:'DZ goes back to the desk and listens. PO answers downstage, open to the audience for the whole call.',a:{DZ:BEHIND,PO:[1000,800]},m:[['DZ',[[620,620],BEHIND]]],l:'SFX: Tung Tung Sahur ringtone. Lights out after MOM hangs up.',v:'MOM — voice offstage (or an isolated special on the right-hand stairs).'}
+]},
+{tab:'Act 3 · Sc 1',name:'The glasses',place:'Investigation office',props:[DESK,BOARD],beats:[
+ {t:'Whose phone?',c:'PO: “…was that one of the victim\'s mothers?”',b:'DZ at the desk with the V2 file; PO beside him with the phone.',a:{DZ:BEHIND,PO:[1150,520]},m:[],l:'Lights up.'},
+ {t:'DZ steps out',c:'DZ: “I\'m going to check if there\'s any more evidence…”',b:'DZ exits to the Flap 1 wing. PO keeps searching the phone, jotting notes. DZ returns on a 10 count.',a:{DZ:[760,520],PO:[1150,520]},m:[['DZ',[BEHIND,W1,[760,520]]]],l:'—'},
+ {t:'The race',c:'PO: “WHA! DETECTIVE WAIT FOR ME !!”',b:'DZ fast-walks to the Flap 2 wing and peeks back. PO runs after. Both cross behind the backstage wall and come out of the Flap 1 wing, PO panting.',a:{DZ:[520,560],PO:[680,600]},m:[['DZ',[[760,520],W2,BS,W1,[520,560]]],['PO',[[1150,520],[1650,330]]]],l:'—'},
+ {t:'Let’s go',c:'PO: “Whatever… let’s just go…”',b:'DZ exits first, PO follows, out the Flap 1 wing.',a:{},m:[['DZ',[[520,560],W1]],['PO',[[680,600],[420,450],W1]]],l:'Cut lights.'},
+ {t:'The glasses',c:'DZ: “Heres all of the evidence”',b:'Both wearing gloves at the evidence table. PO holds up the glasses; DZ hands over a zip lock.',p:[['table',944,560,'Evidence table'],BOARD],a:{DZ:[800,465],PO:[1090,465]},m:[],l:'Lights up.'},
+ {t:'DZ slips off',c:'PO: “Uh– huh? Detective? Where’d you go?”',b:'DZ walks off to the Flap 1 wing without PO noticing. Hold the silence. DZ returns; on “didn’t you hear me”, he points to the side opposite where he stands.',p:[['table',944,560,'Evidence table'],BOARD],a:{DZ:[800,465],PO:[1090,465]},m:[['DZ',[[800,465],W1,[800,465]]]],l:'Lights out at end.'}
+]},
+{tab:'Act 3 · Sc 2',name:'Crash-out',place:'Office → lab',props:[DESK],beats:[
+ {t:'The forgotten evidence',c:'DZ: “So, what did the doctor say?”',b:'DZ writing at the desk. PO off to the side.',a:{DZ:BEHIND,PO:[1200,560]},m:[],l:'Lights up.'},
+ {t:'PO leaves in tears',c:'DZ: “GO, I SAID GO!”',b:'PO packs up and exits crying to the Flap 2 wing.',a:{DZ:BEHIND},m:[['PO',[[1200,560],W2]]],l:'—'},
+ {t:'Crash-out',c:'*Starts wailing hard*',b:'DZ throws the papers off his desk across to the Flap 2 side, then exits to the Flap 1 wing.',p:[DESK,['papers',1440,720]],a:{},m:[['DZ',[BEHIND,W1]]],l:'Blackout. Crew clears the papers and desk; set the lab table.'},
+ {t:'Delivery to the doctor',c:'SFX: knock',b:'M working at the lab table. PO enters from the Flap 1 wing and hands over the glasses.',p:[LAB],a:{M:MBEH,PO:[1020,560]},m:[['PO',[W1,[1020,560]]]],l:'Lights up.'},
+ {t:'Why are there two of you?',c:'M: “Wh- why\'s there two of you?”',b:'Sight gag: a second PO steps in beside the first for “Thank you so much!!”, then slips back out the Flap 1 wing before PO turns.',p:[LAB],a:{M:MBEH,PO:[1020,560],POd:[870,620]},m:[['POd',[W1,[870,620]]]],l:'Lights out at end.'}
+]},
+{tab:'Act 3 · Sc 2b',name:'Fingerprints & a wallet',place:'Office · lab · Ms. Goh’s office',props:[BOARD],beats:[
+ {t:'Working up courage',c:'PO: “*exhale* okay…you\'ve got this…”',b:'PO alone at the edge of the Flap 2 wing. DZ inspecting the corkboard upstage.',a:{PO:[1560,520],DZ:[944,290]},m:[],l:'Lights up.'},
+ {t:'The apology',c:'DZ: “I guess I owe you an apology”',b:'PO crosses to DZ. They face each other for the apology and the smile.',a:{DZ:[880,320],PO:[1060,340]},m:[['PO',[[1560,520],[1060,340]]]],l:'—'},
+ {t:'Fingerprints call',c:'SFX: phone ring',b:'PO answers on the spot.',a:{DZ:[880,320],PO:[1060,340]},m:[],l:'SFX: phone ring.',v:'M — on the phone.'},
+ {t:'Back with the news',c:'PO: “deeeeteeeectiiiiivvveeeee-!”',b:'PO exits to the Flap 1 wing, counts five, re-enters from the same wing calling for DZ and hands over the report.',a:{DZ:[880,320],PO:[1000,410]},m:[['PO',[[1060,340],W1,[1000,410]]]],l:'—'},
+ {t:'Muttering off',c:'DZ: “wow..thinking so highly of her…”',b:'DZ and PO exit together to the Flap 2 wing.',a:{},m:[['DZ',[[880,320],W2]],['PO',[[1000,410],[1500,420],W2]]],l:'—'},
+ {t:'Meanwhile with Doc',c:'K: “Doctor-! What are you looking at?”',b:'M at the lab table. K enters from the Flap 1 wing.',p:[LAB],a:{M:MBEH,K:[1040,540]},m:[['K',[W1,[1040,540]]]],l:'Shift to lab area.'},
+ {t:'K runs the file',c:'M: “Ugh..You\'re giving it, tell her I\'m busy”',b:'K grabs the file and runs off the Flap 1 wing. Lights close; M exits with her table out the Flap 2 wing.',p:[LAB],a:{},m:[['K',[[1040,540],W1]],['M',[MBEH,W2]]],l:'Close lights.'},
+ {t:'Ms. Goh’s office',c:'Y: “Come in”',b:'Ms. Goh at her desk. K enters from the Flap 2 wing with the thin folder, bows and exits the same way.',p:[['desk',944,560,'Ms. Goh desk']],a:{Y:BEHIND,K:[1180,540]},m:[['K',[W2,[1180,540]]]],l:'Lights up. SFX: knock.'},
+ {t:'Back with M',c:'M: “what did she say.”',b:'Ms. Goh exits through the Flap 1 side. K re-enters from the Flap 2 wing to M at her table.',p:[LAB],a:{M:MBEH,K:[1060,540]},m:[['Y',[BEHIND,W1]],['K',[W2,[1060,540]]]],l:'—'},
+ {t:'The wallet',c:'PO: “BUT!! Someone also surrendered this a few hours ago..”',b:'Lights out; M and K take their tables off. DZ comes out from the Flap 1 wing with PO rushing after, holding the bagged wallet.',p:[],a:{DZ:[860,560],PO:[1060,590]},m:[['M',[MBEH,W2]],['K',[[1060,540],W2]],['DZ',[W1,[860,560]]],['PO',[W1,[700,480],[1060,590]]]],l:'Lights out, then up.'},
+ {t:'Wallet to the lab',c:'SFX: knock',b:'Switch to M’s office. DZ and PO enter from the Flap 1 wing, hand over the wallet, then exit the same way.',p:[LAB],a:{M:MBEH,DZ:[970,540],PO:[1060,630]},m:[['DZ',[W1,[970,540]]],['PO',[W1,[1060,630]]]],l:'Lights out at end.'}
+]},
+{tab:'Act 3 · Finale',name:'The confession',place:'DZ’s office → flashback',props:[BOARD],beats:[
+ {t:'Caught',c:'PO: “DETECTIVE Z!! we\'ve heard that you\'ve caught the kil…”',b:'DZ holds Ms. Goh centre by the corkboard. PO and PO2 burst in from the Flap 2 wing and freeze.',a:{DZ:[820,420],Y:[1000,420],PO:[1300,560],PO2:[1440,620]},m:[['PO',[W2,[1300,560]]],['PO2',[W2,[1440,620]]]],l:'Lights up.'},
+ {t:'The confession',c:'L: “I\'ll start with my first victim…”',b:'Ms. Goh steps down toward the audience to tell it. V1 enters to the foreground as she begins.',a:{DZ:[820,420],Y:[1000,560],PO:[1300,560],PO2:[1440,620],V1:[944,830]},m:[['Y',[[1000,420],[1000,560]]],['V1',[W1,[944,830]]]],l:'Lights out on the office.'},
+ {t:'Flashback',c:'V1: “w…WAIT..we can…WE CAN TALK ABOUT THIS-!”',b:'Special on the foreground. Ms. Goh advances on V1 and shoves him down. On the final blow, cut lights; V1 scrambles off to the Flap 1 wing, leaving the wallet on the floor.',p:[['wallet',880,880]],a:{Y:[1050,770]},m:[['Y',[[1000,560],[1050,770]]],['V1',[[944,830],W1]]],l:'Foreground special. Cut lights on the final blow.'}
+]}
+];
+
+const SIZES={newsdesk:[380,90,'News desk'],desk:[300,110,'Desk'],lab:[320,110,'Lab table'],table:[340,110,'Table'],chair:[80,80,'Chair'],couch:[320,100,'Sofa'],phone:[90,50,'Phone'],board:[440,46,'Corkboard'],booth:[300,80,'Lights & sound'],wallet:[70,44,'Wallet']};
+const $=id=>document.getElementById(id);
+let st={s:0,b:0};
+try{const v=JSON.parse(localStorage.getItem('blk')||'null');if(v&&SCENES[v.s]){st={s:v.s,b:Math.min(v.b,SCENES[v.s].beats.length-1)}}}catch(e){}
+
+function baseStage(){return `
+<rect x="0" y="0" width="1920" height="1200" fill="var(--off)"/>
+<rect x="108" y="0" width="1672" height="955" fill="var(--stage)"/>
+<rect x="255" y="0" width="1345" height="75" fill="var(--set)"/>
+<text x="928" y="52" text-anchor="middle" font-size="40" font-weight="800" fill="var(--setink)">Backstage</text>
+<polygon points="73,320 580,165 612,268 103,422" fill="var(--set)"/>
+<text x="330" y="300" text-anchor="middle" font-size="44" font-weight="800" fill="var(--setink)" transform="rotate(-17 330 300)">Flap 1</text>
+<polygon points="1300,152 1811,307 1780,414 1271,260" fill="var(--set)"/>
+<text x="1545" y="300" text-anchor="middle" font-size="44" font-weight="800" fill="var(--setink)" transform="rotate(17 1545 300)">Flap 2</text>
+<rect x="0" y="450" width="108" height="250" fill="var(--stairs)"/>
+<text x="54" y="575" text-anchor="middle" font-size="34" font-weight="800" fill="var(--setink)" transform="rotate(90 54 575)" dominant-baseline="middle">Stairs</text>
+<rect x="1780" y="423" width="140" height="250" fill="var(--stairs)"/>
+<text x="1850" y="548" text-anchor="middle" font-size="34" font-weight="800" fill="var(--setink)" transform="rotate(-90 1850 548)" dominant-baseline="middle">Stairs</text>
+<rect x="755" y="955" width="410" height="125" fill="var(--stairs)"/>
+<text x="960" y="1030" text-anchor="middle" font-size="40" font-weight="800" fill="var(--setink)">Stairs</text>
+<rect x="0" y="1080" width="1920" height="120" fill="var(--house)"/>
+<text x="40" y="1150" font-size="28" font-weight="700" letter-spacing="6" fill="var(--setink)" opacity=".55">AUDIENCE</text>`}
+
+function prop(p){
+  const [type,x,y,label,ghost]=p;
+  if(type==='tape'){const [, x1,y1,x2,y2]=p;return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--tape)" stroke-width="12" stroke-dasharray="40 24"/><text x="${x1+20}" y="${y1-14}" font-size="28" font-weight="700" fill="var(--setink)">Police tape</text>`}
+  if(type==='papers'){let s='';[[-50,-10,12],[10,20,-20],[60,-30,30],[-10,50,6]].forEach(([dx,dy,r])=>{s+=`<rect x="${x+dx-24}" y="${y+dy-16}" width="48" height="32" fill="var(--panel)" stroke="var(--prop)" stroke-width="3" transform="rotate(${r} ${x+dx} ${y+dy})"/>`});return s+`<text x="${x}" y="${y+100}" text-anchor="middle" font-size="26" font-weight="700" fill="var(--setink)">Thrown papers</text>`}
+  const [w,h,def]=SIZES[type];const lab=label||def;
+  const g=ghost?`fill="none" stroke="var(--prop)" stroke-width="5" stroke-dasharray="16 10"`:`fill="var(--prop)"`;
+  const tf=ghost?'var(--setink)':'var(--prop-ink)';
+  const fs=w<120?20:28;
+  const inside=w>=160;
+  return `<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="8" ${g}/>`+
+   (inside?`<text x="${x}" y="${y+10}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="${tf}">${lab}</text>`
+          :`<text x="${x}" y="${y+h/2+28}" text-anchor="middle" font-size="24" font-weight="700" fill="var(--setink)">${lab}</text>`);
+}
+function path(id,pts){
+  const c=CAST[id][2];const d=pts.map(p=>p.join(',')).join(' ');
+  const [a,b]=[pts[pts.length-2],pts[pts.length-1]];const ang=Math.atan2(b[1]-a[1],b[0]-a[0]);
+  // stop short of the token so the arrowhead shows
+  const len=Math.hypot(b[0]-a[0],b[1]-a[1]);const back=Math.min(62,len*.5);
+  const tx=b[0]-Math.cos(ang)*back, ty=b[1]-Math.sin(ang)*back;
+  const pp=pts.slice(0,-1).concat([[tx,ty]]).map(p=>p.join(',')).join(' ');
+  const s=26,h1=[tx-Math.cos(ang-0.45)*s,ty-Math.sin(ang-0.45)*s],h2=[tx-Math.cos(ang+0.45)*s,ty-Math.sin(ang+0.45)*s];
+  const st=pts[0];
+  return `<polyline points="${pp}" fill="none" stroke="${c}" stroke-width="7" stroke-dasharray="20 12" stroke-linejoin="round" opacity=".9"/>`+
+   `<polygon points="${tx},${ty} ${h1.join(',')} ${h2.join(',')}" fill="${c}"/>`+
+   `<circle cx="${st[0]}" cy="${st[1]}" r="40" fill="none" stroke="${c}" stroke-width="5" stroke-dasharray="10 8" opacity=".8"/>`;
+}
+function token(id,[x,y]){const [lab,,c]=CAST[id];const fs=lab.length>2?32:40;
+  return `<g class="tok"><circle cx="${x}" cy="${y}" r="56" fill="${c}" stroke="var(--ring)" stroke-width="6"/><text x="${x}" y="${y+fs*.36}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="#fff">${lab}</text></g>`}
+
+function render(){
+  const sc=SCENES[st.s],bt=sc.beats[st.b];
+  $('tabs').innerHTML=SCENES.map((s,i)=>`<button class="tab" role="tab" id="tab-${i}" aria-selected="${i===st.s}" data-s="${i}"><b>${s.tab}</b><span>${s.name}</span></button>`).join('');
+  $('sTitle').textContent=`${sc.tab} — ${sc.name}`;$('sPlace').textContent=sc.place;
+  const props=bt.p||sc.props;
+  let svg=baseStage()+props.map(prop).join('')+(bt.m||[]).map(([id,pts])=>path(id,pts)).join('')+Object.entries(bt.a).map(([id,p])=>token(id,p)).join('');
+  $('stage').innerHTML=svg;
+  $('stage').setAttribute('aria-label',`Stage plan: ${bt.t}`);
+  $('bTitle').textContent=bt.t;$('bCue').textContent=bt.c;$('bDo').textContent=bt.b;$('bLight').textContent=bt.l||'—';
+  $('voiceWrap').hidden=!bt.v;$('bVoice').textContent=bt.v||'';
+  const ids=Object.keys(bt.a);
+  $('bCast').innerHTML=ids.length?ids.map(id=>`<span class="chip"><span class="dot" style="background:${CAST[id][2]}">${CAST[id][0]}</span>${CAST[id][1]}</span>`).join(''):'<span style="color:var(--muted);font-size:13px">Stage empty</span>';
+  $('beats').innerHTML=sc.beats.map((b,i)=>`<li><button class="beat" data-b="${i}" aria-current="${i===st.b}">${b.t}</button></li>`).join('');
+  $('count').textContent=`Beat ${st.b+1} of ${sc.beats.length}`;
+  $('prev').disabled=st.s===0&&st.b===0;$('next').disabled=st.s===SCENES.length-1&&st.b===sc.beats.length-1;
+  $('next').textContent=st.b===sc.beats.length-1?'Next scene →':'Next beat →';
+  $('prev').textContent=st.b===0?'← Prev scene':'← Prev beat';
+  try{localStorage.setItem('blk',JSON.stringify(st))}catch(e){}
+  const t=$('tab-'+st.s);if(t&&t.scrollIntoView)t.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+function step(d){const sc=SCENES[st.s];let b=st.b+d;
+  if(b<0){if(st.s>0){st.s--;st.b=SCENES[st.s].beats.length-1}}
+  else if(b>=sc.beats.length){if(st.s<SCENES.length-1){st.s++;st.b=0}}
+  else st.b=b;render()}
+$('tabs').addEventListener('click',e=>{const t=e.target.closest('[data-s]');if(t){st={s:+t.dataset.s,b:0};render()}});
+$('beats').addEventListener('click',e=>{const t=e.target.closest('[data-b]');if(t){st.b=+t.dataset.b;render()}});
+$('prev').onclick=()=>step(-1);$('next').onclick=()=>step(1);
+document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea'))return;if(e.key==='ArrowRight')step(1);if(e.key==='ArrowLeft')step(-1)});
+render();
+</script>
+</body>
+</html>
